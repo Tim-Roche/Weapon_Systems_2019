@@ -1,14 +1,3 @@
-[t,p,density, mach, Q] = atmosModel_1(25002, 0);
-disp("t")
-disp(t);
-disp("p");
-disp(p);
-disp("mach");
-disp(mach);
-disp("Q");
-disp(Q);
-
-
 % ------------------- atmosModel.m--------------------
 %%%%%%%%%%%%%%%
 %Atmospheric Model
@@ -25,7 +14,7 @@ disp(Q);
 %Q  = Dynamic Pressure (Pascals)
 %%%%%%%%%%%%%%%
 
-function [t,p, density, mach, Q] = atmosModel_1(h, s)
+function [t,p, density, mach, Q] = atmosModel(h, s)
     t=0; %temperature in cel
     p=0; %pressure
     Vsound_FPS = 49*sqrt(celToRankine(t)); %speed of sound in FPS
@@ -45,6 +34,7 @@ function [t,p, density, mach, Q] = atmosModel_1(h, s)
     
     density = p /(.2869 * (t + 273.1));
     Q = (density/2)*(s^2); %Dynamic Pressure
+    
     function r = celToRankine(c)
         r = (c + 273.15) * (9/5);
     end

@@ -1,4 +1,4 @@
-function [x_x, y_x, x_v, y_v, x_a, y_a, time_array, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC)
+function [x_x, y_x, x_v, y_v, x_a, y_a, time_array] = PM_noAir(angle, v_o, total_points, INC)
 g = -9.8;
 
 v_ox = v_o*cosd(angle);
@@ -22,11 +22,12 @@ for dataPoint = 1:total_points+1
     y_v(dataPoint) = g*time+v_oy;
     x_a(dataPoint) = 0;
     y_a(dataPoint) = g; 
+    
+    final_time = (-v_oy/g)*2;
+    final_vel = sqrt(v_ox^2 + (g*final_time+v_oy)^2);
+    final_distance = v_ox*final_time;
 end
  
-%Final time velocity and distance calculations
-timef = (-v_oy/g)*2;
-velf = sqrt(v_ox^2 + (g*timef+v_oy)^2);
-distancef = v_ox*timef;
+
 
 end
