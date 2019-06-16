@@ -1,3 +1,5 @@
+%Timothy Roche
+%Weapon Systems
 END = 5;
 INC = 0.1
 x = 0:INC:END;

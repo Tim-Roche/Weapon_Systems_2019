@@ -1,3 +1,5 @@
+%Timothy Roche
+%Weapon Systems
 function CA = CA_model(mach)
     if(mach < 0.3)
        CA = 0.5;

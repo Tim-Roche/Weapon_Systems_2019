@@ -1,3 +1,5 @@
+%Timothy Roche
+%Weapon Systems
 % ------------------- atmosModel.m--------------------
 %%%%%%%%%%%%%%%
 %Atmospheric Model
@@ -17,11 +19,9 @@
 function [t,p, density, mach, Q] = atmosModel(h, s)
     t=0; %temperature in cel
     p=0; %pressure
-    Vsound_FPS = 49*sqrt(celToRankine(t)); %speed of sound in FPS
-    mach = s/feetPS_to_metersPS(Vsound_FPS);
     if(h > 25000)
         t = -131.21 + 0.00299*h;
-        p = 2.488 * ((t+273.1)/216.6) ^(-11.388);
+        p = 2.488 * ((t+273.1)/216.6)^(-11.388);
         
     elseif((h > 11000)&&(h<25000))
         t=-56.46;
@@ -34,6 +34,9 @@ function [t,p, density, mach, Q] = atmosModel(h, s)
     
     density = p /(.2869 * (t + 273.1));
     Q = (density/2)*(s^2); %Dynamic Pressure
+    
+    Vsound_FPS = 49*sqrt(celToRankine(t)); %speed of sound in FPS
+    mach = s/feetPS_to_metersPS(Vsound_FPS);
     
     function r = celToRankine(c)
         r = (c + 273.15) * (9/5);

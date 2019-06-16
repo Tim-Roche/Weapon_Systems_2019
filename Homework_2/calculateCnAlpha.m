@@ -1,3 +1,5 @@
+%Timothy Roche
+%Weapon Systems
 mass = 350;
 diameter = 0.5;
 alpha = 25;
