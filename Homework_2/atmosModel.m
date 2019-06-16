@@ -17,6 +17,7 @@
 %%%%%%%%%%%%%%%
 
 function [t,p, density, mach, Q] = atmosModel(h, s)
+    s = abs(s);
     t=0; %temperature in cel
     p=0; %pressure
     if(h > 25000)
@@ -34,7 +35,6 @@ function [t,p, density, mach, Q] = atmosModel(h, s)
     
     density = p /(.2869 * (t + 273.1));
     Q = (density/2)*(s^2); %Dynamic Pressure
-    
     Vsound_FPS = 49*sqrt(celToRankine(t)); %speed of sound in FPS
     mach = s/feetPS_to_metersPS(Vsound_FPS);
     
