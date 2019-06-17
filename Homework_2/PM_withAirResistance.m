@@ -1,5 +1,6 @@
 %Timothy Roche
 %Weapon Systems
+%Projectile Motion Simulator -- With Air Resistance
 function [a_x, a_y, v_x, v_y, x_x, x_y, timeArray, timef, distancef, velf] = PM_withAirResistance(m, A, v_o, angle, deltaT, simRunTime)
 %Assuming Quadratic Air Resistance
 g = 9.8;
@@ -44,10 +45,6 @@ for i = 2:totalPoints %Iterating using Euler
         timef = timeArray(i);
         velf = sqrt((v_x(i))^2 + (v_y(i)^2));
         distancef = x_x(i);
-        disp("--------");
-        disp(angle);
-        disp(distancef);
-        disp(velf);
     end
 end
 end

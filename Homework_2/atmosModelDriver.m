@@ -1,9 +1,9 @@
 %Timothy Roche
 %Weapon Systems
-%Test Program for AtmosDriver
+%Test Program for Question 1: AtmosDriver
 
 test_height = 25002;
-test_velocity = 0;
+test_velocity = 200;
 
 [t,p,density, mach, Q] = atmosModel(test_height, test_velocity);
 disp("t")
@@ -21,9 +21,9 @@ hold on;
 for v = 1:500:3000
     for h = x
         [t,p, density, mach, Q] = atmosModel(h, 100);
-        data = [data, t];
+        data = [data, p];
     end
-    plot(x/1000,data);t
+    plot(x/1000,data);
     data = [];
 end
 hold off;

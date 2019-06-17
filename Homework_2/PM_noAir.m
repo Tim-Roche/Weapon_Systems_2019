@@ -1,5 +1,6 @@
 %Timothy Roche
 %Weapon Systems
+%Projectile Motion Simulation -- No Air Resistance
 function [x_x, y_x, x_v, y_v, x_a, y_a, time_array, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC)
 g = -9.8;
 

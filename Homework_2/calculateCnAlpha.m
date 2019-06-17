@@ -1,5 +1,6 @@
 %Timothy Roche
 %Weapon Systems
+%Question 2
 mass = 350;
 diameter = 0.5;
 alpha = 25;
@@ -12,6 +13,7 @@ mass = 350;
 G = 20;
 sRef = pi()*(diameter/2)^2;
 Cnalpha = (G*mass*9.8)/(alpha*Q*sRef);
+disp("Cnalpha:");
 disp(Cnalpha);
 
 [t,p,density, mach, Q] = atmosModel(25002, 0);

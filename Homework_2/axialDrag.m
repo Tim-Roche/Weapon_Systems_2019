@@ -1,12 +1,12 @@
 %Timothy Roche
 %Weapon Systems
+%Question 3
 END = 5;
-INC = 0.1
+INC = 0.1;
 x = 0:INC:END;
 len = numel(x);
 y = zeros(1, len);
 for i = 1:len
-    disp(i);
     y(i) = axDrag(x(i));
 end
 plot(x,y);
