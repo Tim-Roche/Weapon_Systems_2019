@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>projectile</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-16"><meta name="DC.source" content="projectile.m"><style type="text/css">
+      --><title>Question4</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-17"><meta name="DC.source" content="Question4.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -72,8 +72,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 <span class="comment">%Simulation Conditions</span>
 <span class="comment">%--------------------------</span>
-SIM_RUNTIME = 110; <span class="comment">%seconds</span>
-INC = 0.1; <span class="comment">%New datapoint every x seconds</span>
+SIM_RUNTIME = 105; <span class="comment">%seconds</span>
+INC = 0.01; <span class="comment">%New datapoint every x seconds</span>
 v_o = 500; <span class="comment">%Initial velocity magnitude</span>
 diameter = 0.3;
 m = 250; <span class="comment">%kg</span>
@@ -122,15 +122,15 @@ subPlotX = 2;
 subPlotY = 5;
 
 fig1 = figure(1);
-set(fig1, <span class="string">'Position'</span>, [0 0 700 550])
+set(fig1, <span class="string">'Position'</span>, [0 0 800 550])
 <span class="comment">%movegui('west');</span>
 sgtitle(<span class="string">"Projectile Motion -- No Air Resistance"</span>);
 plotData(timeNoAir, dis_x/1000,  <span class="string">"Distance VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Distance (km)"</span>,subPlotX, subPlotY, 1, 0, maxTimeND);
 plotData(timeNoAir, dis_y/1000, <span class="string">"Height VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Height (km)"</span>, subPlotX,subPlotY,2, 0, maxTimeND)
 plotData(timeNoAir, vel_x, <span class="string">"X-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Vel. (m/s)"</span>, subPlotX,subPlotY,3, 0, maxTimeND);
 plotData(timeNoAir, vel_y, <span class="string">"Y-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Vel. (m/s)"</span>, subPlotX,subPlotY,4, 0, maxTimeND);
-plotData(timeNoAir, acc_x/9.8, <span class="string">"X-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Acc. (G)"</span>,subPlotX,subPlotY,5, 0, maxTimeND);
-plotData(timeNoAir, acc_y/9.8, <span class="string">"Y-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Acc. (G)"</span>,subPlotX,subPlotY,6, 0, maxTimeND);
+plotData(timeNoAir, acc_x/-9.8, <span class="string">"X-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Acc. (G)"</span>,subPlotX,subPlotY,5, 0, maxTimeND);
+plotData(timeNoAir, acc_y/-9.8, <span class="string">"Y-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Acc. (G)"</span>,subPlotX,subPlotY,6, 0, maxTimeND);
 plotData(angles, distanceFinal/1000, <span class="string">"Launch Angle Vs Distance"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Distance (km)"</span>, subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal, <span class="string">"Launch Angle Vs Final Velocity"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Final Vel. (m/s)"</span>, subPlotX, subPlotY, 8, 10, inf);
 ylim([480, 520]); <span class="comment">%Fixes some weird labeling issues the graph was having</span>
@@ -173,7 +173,7 @@ velFinal_Drag(:,i) = velf_Drag;
 <span class="keyword">end</span>
 
 fig2 = figure(2);
-set(fig2, <span class="string">'Position'</span>, [800 0 700 550])
+set(fig2, <span class="string">'Position'</span>, [800 0 800 550])
 subPlotX = 2;
 subPlotY = 5;
 subplot(subPlotX,subPlotY,1);
@@ -183,8 +183,8 @@ plotData(timeDrag, dis_x_Drag/1000,  <span class="string">"Distance VS Time"</sp
 plotData(timeDrag, dis_y_Drag/1000, <span class="string">"Height VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Height (km)"</span>, subPlotX,subPlotY,2,0,maxTimeD)
 plotData(timeDrag, vel_x_Drag, <span class="string">"X-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Vel. (m/s)"</span>, subPlotX,subPlotY,3,0,maxTimeD);
 plotData(timeDrag, vel_y_Drag, <span class="string">"Y-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Vel. (m/s)"</span>, subPlotX,subPlotY,4,0,maxTimeD);
-plotData(timeDrag, acc_x_Drag/9.8, <span class="string">"X-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Acc. (G)"</span>,subPlotX,subPlotY,5,0,maxTimeD);
-plotData(timeDrag, acc_y_Drag/9.8, <span class="string">"Y-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Acc. (G)"</span>,subPlotX,subPlotY,6,0,maxTimeD);
+plotData(timeDrag, acc_x_Drag/-9.8, <span class="string">"X-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Acc. (G)"</span>,subPlotX,subPlotY,5,0,maxTimeD);
+plotData(timeDrag, acc_y_Drag/-9.8, <span class="string">"Y-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Acc. (G)"</span>,subPlotX,subPlotY,6,0,maxTimeD);
 plotData(angles, distanceFinal_Drag/1000, <span class="string">"Launch Angle Vs Distance"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Distance (km)"</span>, subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal_Drag, <span class="string">"Launch Angle Vs Final Velocity"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Final Vel. (m/s)"</span>, subPlotX, subPlotY, 8, 10, inf);
 
@@ -213,7 +213,7 @@ plotData(dis_x_Drag/1000, dis_y_Drag/1000, <span class="string">"With kv^2 Air R
     hold <span class="string">off</span>
     xlim([xPosMin, xPosMax]);
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="projectile_01.png" alt=""> <img vspace="5" hspace="5" src="projectile_02.png" alt=""> <img vspace="5" hspace="5" src="projectile_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="Question4_01.png" alt=""> <img vspace="5" hspace="5" src="Question4_02.png" alt=""> <img vspace="5" hspace="5" src="Question4_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %Timothy Roche
 %Weapon Systems
@@ -221,8 +221,8 @@ plotData(dis_x_Drag/1000, dis_y_Drag/1000, <span class="string">"With kv^2 Air R
 
 %Simulation Conditions
 %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
-SIM_RUNTIME = 110; %seconds
-INC = 0.1; %New datapoint every x seconds
+SIM_RUNTIME = 105; %seconds
+INC = 0.01; %New datapoint every x seconds
 v_o = 500; %Initial velocity magnitude
 diameter = 0.3; 
 m = 250; %kg
@@ -271,15 +271,15 @@ subPlotX = 2;
 subPlotY = 5;
 
 fig1 = figure(1);
-set(fig1, 'Position', [0 0 700 550])
+set(fig1, 'Position', [0 0 800 550])
 %movegui('west');
 sgtitle("Projectile Motion REPLACE_WITH_DASH_DASH No Air Resistance");
 plotData(timeNoAir, dis_x/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 1, 0, maxTimeND);
 plotData(timeNoAir, dis_y/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2, 0, maxTimeND)
 plotData(timeNoAir, vel_x, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3, 0, maxTimeND);  
 plotData(timeNoAir, vel_y, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4, 0, maxTimeND); 
-plotData(timeNoAir, acc_x/9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5, 0, maxTimeND);
-plotData(timeNoAir, acc_y/9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6, 0, maxTimeND);
+plotData(timeNoAir, acc_x/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5, 0, maxTimeND);
+plotData(timeNoAir, acc_y/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6, 0, maxTimeND);
 plotData(angles, distanceFinal/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
 ylim([480, 520]); %Fixes some weird labeling issues the graph was having
@@ -322,7 +322,7 @@ end
 end
 
 fig2 = figure(2);
-set(fig2, 'Position', [800 0 700 550])
+set(fig2, 'Position', [800 0 800 550])
 subPlotX = 2;
 subPlotY = 5;
 subplot(subPlotX,subPlotY,1);
@@ -332,8 +332,8 @@ plotData(timeDrag, dis_x_Drag/1000,  "Distance VS Time", "Time (s)", "Distance (
 plotData(timeDrag, dis_y_Drag/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2,0,maxTimeD)
 plotData(timeDrag, vel_x_Drag, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3,0,maxTimeD);  
 plotData(timeDrag, vel_y_Drag, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4,0,maxTimeD); 
-plotData(timeDrag, acc_x_Drag/9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5,0,maxTimeD);
-plotData(timeDrag, acc_y_Drag/9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
+plotData(timeDrag, acc_x_Drag/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5,0,maxTimeD);
+plotData(timeDrag, acc_y_Drag/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
 plotData(angles, distanceFinal_Drag/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal_Drag, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
 

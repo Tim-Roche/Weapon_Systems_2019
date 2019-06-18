@@ -1,20 +1,20 @@
 %Timothy Roche
 %Weapon Systems
 %Question 3
-END = 5;
-INC = 0.1;
-x = 0:INC:END;
-len = numel(x);
-y = zeros(1, len);
-for i = 1:len
-    y(i) = axDrag(x(i));
+
+value = 0:0.1:5;
+data = [];
+for i = value
+    data = [data,CA_model(i)];
 end
-plot(x,y);
+
+plot(value,data);
 title("CA VS Mach");
 xlabel("Mach");
 ylabel("CA");
 
-function CA = axDrag(mach)
+%------------CA_model.m----------------
+function CA = CA_model(mach)
     if(mach < 0.3)
        CA = 0.5;
     elseif(mach > 1)
@@ -23,4 +23,3 @@ function CA = axDrag(mach)
        CA = (0.5/0.7)*mach + 0.2857;
     end
 end
-

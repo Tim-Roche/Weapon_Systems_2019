@@ -4,8 +4,8 @@
 
 %Simulation Conditions
 %--------------------------
-SIM_RUNTIME = 110; %seconds
-INC = 0.1; %New datapoint every x seconds
+SIM_RUNTIME = 105; %seconds
+INC = 0.01; %New datapoint every x seconds
 v_o = 500; %Initial velocity magnitude
 diameter = 0.3; 
 m = 250; %kg
@@ -54,15 +54,15 @@ subPlotX = 2;
 subPlotY = 5;
 
 fig1 = figure(1);
-set(fig1, 'Position', [0 0 700 550])
+set(fig1, 'Position', [0 0 800 550])
 %movegui('west');
 sgtitle("Projectile Motion -- No Air Resistance");
 plotData(timeNoAir, dis_x/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 1, 0, maxTimeND);
 plotData(timeNoAir, dis_y/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2, 0, maxTimeND)
 plotData(timeNoAir, vel_x, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3, 0, maxTimeND);  
 plotData(timeNoAir, vel_y, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4, 0, maxTimeND); 
-plotData(timeNoAir, acc_x/9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5, 0, maxTimeND);
-plotData(timeNoAir, acc_y/9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6, 0, maxTimeND);
+plotData(timeNoAir, acc_x/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5, 0, maxTimeND);
+plotData(timeNoAir, acc_y/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6, 0, maxTimeND);
 plotData(angles, distanceFinal/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
 ylim([480, 520]); %Fixes some weird labeling issues the graph was having
@@ -105,7 +105,7 @@ end
 end
 
 fig2 = figure(2);
-set(fig2, 'Position', [800 0 700 550])
+set(fig2, 'Position', [800 0 800 550])
 subPlotX = 2;
 subPlotY = 5;
 subplot(subPlotX,subPlotY,1);
@@ -115,8 +115,8 @@ plotData(timeDrag, dis_x_Drag/1000,  "Distance VS Time", "Time (s)", "Distance (
 plotData(timeDrag, dis_y_Drag/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2,0,maxTimeD)
 plotData(timeDrag, vel_x_Drag, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3,0,maxTimeD);  
 plotData(timeDrag, vel_y_Drag, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4,0,maxTimeD); 
-plotData(timeDrag, acc_x_Drag/9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5,0,maxTimeD);
-plotData(timeDrag, acc_y_Drag/9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
+plotData(timeDrag, acc_x_Drag/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5,0,maxTimeD);
+plotData(timeDrag, acc_y_Drag/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
 plotData(angles, distanceFinal_Drag/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal_Drag, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
 

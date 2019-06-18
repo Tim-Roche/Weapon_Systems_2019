@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>atmosModel</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-16"><meta name="DC.source" content="atmosModel.m"><style type="text/css">
+      --><title>Question_1</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-17"><meta name="DC.source" content="Question_1.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -69,6 +69,23 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
   </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Timothy Roche</span>
 <span class="comment">%Weapon Systems</span>
 <span class="comment">%Question 1</span>
+
+<span class="comment">%Test Parameters;</span>
+test_height = 25002; <span class="comment">%Meters</span>
+test_vel = 200; <span class="comment">%m/s</span>
+
+<span class="comment">%Test velocity will remain constant</span>
+<span class="keyword">for</span> height = 10000:10000:30000
+    disp(<span class="string">"----------"</span>);
+    disp(<span class="string">"Height = "</span> + string(test_height) + <span class="string">", V = "</span> + string(test_vel));
+    [t,p,density, mach, Q] = atmosModel(test_height, test_vel);
+    disp(<span class="string">"t (c): "</span> + string(t));
+    disp(<span class="string">"p (KPa): "</span> + string(p));
+    disp(<span class="string">"mach: "</span> + string(mach));
+    disp(<span class="string">"Q (Pascals): "</span> + string(Q));
+<span class="keyword">end</span>
+
+
 <span class="comment">% ------------------- atmosModel.m--------------------</span>
 <span class="comment">%%%%%%%%%%%%%%%</span>
 <span class="comment">%Atmospheric Model</span>
@@ -116,11 +133,46 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
     <span class="keyword">end</span>
 <span class="keyword">end</span>
 <span class="comment">% ------------------------------------------------</span>
+</pre><pre class="codeoutput">----------
+Height = 25002, V = 200
+t (c): -56.454
+p (KPa): 2.482
+mach: 0.67804
+Q (Pascals): 798.637
+----------
+Height = 25002, V = 200
+t (c): -56.454
+p (KPa): 2.482
+mach: 0.67804
+Q (Pascals): 798.637
+----------
+Height = 25002, V = 200
+t (c): -56.454
+p (KPa): 2.482
+mach: 0.67804
+Q (Pascals): 798.637
 </pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %Timothy Roche
 %Weapon Systems
 %Question 1
+
+%Test Parameters; 
+test_height = 25002; %Meters
+test_vel = 200; %m/s
+
+%Test velocity will remain constant
+for height = 10000:10000:30000
+    disp("REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH");
+    disp("Height = " + string(test_height) + ", V = " + string(test_vel));
+    [t,p,density, mach, Q] = atmosModel(test_height, test_vel);
+    disp("t (c): " + string(t));
+    disp("p (KPa): " + string(p));
+    disp("mach: " + string(mach));
+    disp("Q (Pascals): " + string(Q));
+end
+
+
 % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- atmosModel.mREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
 %%%%%%%%%%%%%%%
 %Atmospheric Model
@@ -170,5 +222,7 @@ end
 % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
     
         
+
+
 ##### SOURCE END #####
 --></body></html>

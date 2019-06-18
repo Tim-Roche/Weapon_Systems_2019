@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>bufferAboveZero</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-16"><meta name="DC.source" content="bufferAboveZero.m"><style type="text/css">
+      --><title>PM_noAir</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-17"><meta name="DC.source" content="PM_noAir.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,29 +68,77 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
   </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Timothy Roche</span>
 <span class="comment">%Weapon Systems</span>
-<span class="comment">%For Question 4</span>
-<span class="comment">%Makes sure the graphs dont go below the ground</span>
-<span class="comment">%Function acts like a buffer (passes through the data)</span>
-<span class="comment">%unless if the datapoint is below 0</span>
-<span class="keyword">function</span> buffered = bufferAboveZero(data)
-    buffered = data;
-    <span class="keyword">if</span>(data &lt; 0)
-        buffered = 0;
-    <span class="keyword">end</span>
+<span class="comment">%Projectile Motion Simulation -- No Air Resistance</span>
+<span class="keyword">function</span> [x_x, y_x, x_v, y_v, x_a, y_a, time_array, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC)
+g = -9.8;
+
+<span class="comment">%Splitting v_o (initial vel.) into components...</span>
+v_ox = v_o*cosd(angle);
+v_oy = v_o*sind(angle);
+
+x_x = zeros(1, total_points);
+y_x = zeros(1, total_points);
+y_v = zeros(1, total_points);
+x_v = zeros(1, total_points);
+x_a = zeros(1, total_points);
+y_a = zeros(1, total_points);
+
+time_array = zeros(1, total_points);
+
+<span class="keyword">for</span> dataPoint = 1:total_points+1 <span class="comment">%Simulating all datapoints</span>
+    time = (dataPoint-1) * INC;
+    time_array(dataPoint) = time;
+    x_x(dataPoint) = bufferAboveZero(v_ox*time); <span class="comment">%X Pos</span>
+    y_x(dataPoint) = bufferAboveZero((1/2)*g*time^2 + v_oy*time); <span class="comment">%Y Pos</span>
+    x_v(dataPoint) = v_ox; <span class="comment">%X Velocity</span>
+    y_v(dataPoint) = g*time+v_oy; <span class="comment">%Y Velocity</span>
+    x_a(dataPoint) = 0;
+    y_a(dataPoint) = g;
+<span class="keyword">end</span>
+
+<span class="comment">%Final time velocity and distance calculations</span>
+timef = (-v_oy/g)*2;
+velf = sqrt(v_ox^2 + (g*timef+v_oy)^2);
+distancef = v_ox*timef;
+
 <span class="keyword">end</span>
 </pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %Timothy Roche
 %Weapon Systems
-%For Question 4
-%Makes sure the graphs dont go below the ground
-%Function acts like a buffer (passes through the data) 
-%unless if the datapoint is below 0
-function buffered = bufferAboveZero(data)
-    buffered = data;  
-    if(data < 0)
-        buffered = 0;
-    end
+%Projectile Motion Simulation REPLACE_WITH_DASH_DASH No Air Resistance
+function [x_x, y_x, x_v, y_v, x_a, y_a, time_array, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC)
+g = -9.8;
+
+%Splitting v_o (initial vel.) into components...
+v_ox = v_o*cosd(angle);
+v_oy = v_o*sind(angle);
+
+x_x = zeros(1, total_points);
+y_x = zeros(1, total_points);
+y_v = zeros(1, total_points);
+x_v = zeros(1, total_points);
+x_a = zeros(1, total_points); 
+y_a = zeros(1, total_points);
+
+time_array = zeros(1, total_points);
+
+for dataPoint = 1:total_points+1 %Simulating all datapoints
+    time = (dataPoint-1) * INC;
+    time_array(dataPoint) = time;
+    x_x(dataPoint) = bufferAboveZero(v_ox*time); %X Pos
+    y_x(dataPoint) = bufferAboveZero((1/2)*g*time^2 + v_oy*time); %Y Pos
+    x_v(dataPoint) = v_ox; %X Velocity 
+    y_v(dataPoint) = g*time+v_oy; %Y Velocity
+    x_a(dataPoint) = 0;
+    y_a(dataPoint) = g; 
+end
+ 
+%Final time velocity and distance calculations
+timef = (-v_oy/g)*2;
+velf = sqrt(v_ox^2 + (g*timef+v_oy)^2);
+distancef = v_ox*timef;
+
 end
 ##### SOURCE END #####
 --></body></html>

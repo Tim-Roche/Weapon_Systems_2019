@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>PM_withAirResistance</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-16"><meta name="DC.source" content="PM_withAirResistance.m"><style type="text/css">
+      --><title>Question_2</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-17"><meta name="DC.source" content="Question_2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,105 +68,63 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
   </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Timothy Roche</span>
 <span class="comment">%Weapon Systems</span>
-<span class="comment">%Projectile Motion Simulator -- With Air Resistance</span>
-<span class="keyword">function</span> [a_x, a_y, v_x, v_y, x_x, x_y, timeArray, timef, distancef, velf] = PM_withAirResistance(m, A, v_o, angle, deltaT, simRunTime)
-<span class="comment">%Assuming Quadratic Air Resistance</span>
-g = 9.8;
+<span class="comment">%Question 2</span>
+mass = 350;
+diameter = 0.5;
+alpha = 25;
+h = 15000;
+v = 500;
+mass = 350;
 
-<span class="comment">%Initializing Final Trackers (Final time, final velocity, ...)</span>
-timef = 0;
-velf = 0;
-distancef = 0;
-totalPoints = floor(simRunTime/deltaT);
-timeArray = zeros(1, totalPoints);
-v_x = zeros(1, totalPoints);
-v_y = zeros(1, totalPoints);
-a_x = zeros(1, totalPoints);
-a_y = zeros(1, totalPoints);
-x_x = zeros(1, totalPoints);
-x_y = zeros(1, totalPoints);
+[t,p, density, mach, Q] = atmosModel(h,v);
 
-<span class="comment">%Setting Initial Conditions</span>
-v_x(1) = v_o*cosd(angle);
-v_y(1) = v_o*sind(angle);
-x_x(1) = 0;
-x_y(1) = 0;
-timeArray(1) = 0;
-lock = false;
-<span class="keyword">for</span> i = 2:totalPoints <span class="comment">%Iterating using Euler</span>
-    timeArray(i) = timeArray(i-1)+deltaT;
-    [t_x,p_x, density_x, mach_x, Q_x] = atmosModel(x_y(i-1), v_x(i-1));
-    [t_y,p_y, density_y, mach_y, Q_y] = atmosModel(x_y(i-1), v_y(i-1));
-    k_x = (1/2)*CA_model(mach_x)*density_x*A;
-    k_y = (1/2)*CA_model(mach_y)*density_y*A;
-    vMag = sqrt(v_x(i-1)^2+v_y(i-1)^2);
-    a_x(i-1) = (-k_x*vMag*v_x(i-1))/m;
-    a_y(i-1) = -g - (k_y*vMag*v_y(i-1))/m;
-    v_x(i) = v_x(i-1) + a_x(i-1)*deltaT;
-    v_y(i) = v_y(i-1) + a_y(i-1)*deltaT;
-    x_x(i) = x_x(i-1) + v_x(i-1)*deltaT;
-    x_y(i) = bufferAboveZero(x_y(i-1) + v_y(i-1)*deltaT);
-    <span class="comment">%BufferAboveZero Prevents projectile from going under ground!</span>
-    <span class="keyword">if</span>((x_y(i) &lt;= 0)&amp;&amp;(~lock))
-        lock = true;
-        <span class="comment">%lock Prevents statement from running again once we have an answer</span>
-        timef = timeArray(i);
-        velf = sqrt((v_x(i))^2 + (v_y(i)^2));
-        distancef = x_x(i);
-    <span class="keyword">end</span>
+G = 20;
+sRef = pi()*(diameter/2)^2;
+Cnalpha = (G*mass*9.8)/(alpha*Q*sRef);
+disp(<span class="string">"Cnalpha:"</span>);
+disp(Cnalpha);
+
+[t,p,density, mach, Q] = atmosModel(25002, 0);
+
+<span class="keyword">function</span> r = celToRankine(c)
+    r = (c + 273.15) * (9/5);
 <span class="keyword">end</span>
+
+<span class="keyword">function</span> metersPerSecond = feetPS_to_metersPS(feetPerSecond)
+    metersPerSecond = feetPerSecond*0.3048;
 <span class="keyword">end</span>
+</pre><pre class="codeoutput">Cnalpha:
+    0.5732
+
 </pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %Timothy Roche
 %Weapon Systems
-%Projectile Motion Simulator REPLACE_WITH_DASH_DASH With Air Resistance
-function [a_x, a_y, v_x, v_y, x_x, x_y, timeArray, timef, distancef, velf] = PM_withAirResistance(m, A, v_o, angle, deltaT, simRunTime)
-%Assuming Quadratic Air Resistance
-g = 9.8;
+%Question 2
+mass = 350;
+diameter = 0.5;
+alpha = 25;
+h = 15000;
+v = 500;
+mass = 350;
 
-%Initializing Final Trackers (Final time, final velocity, ...)
-timef = 0;
-velf = 0;
-distancef = 0;
-totalPoints = floor(simRunTime/deltaT);
-timeArray = zeros(1, totalPoints);
-v_x = zeros(1, totalPoints);
-v_y = zeros(1, totalPoints);
-a_x = zeros(1, totalPoints);
-a_y = zeros(1, totalPoints);
-x_x = zeros(1, totalPoints);
-x_y = zeros(1, totalPoints);
+[t,p, density, mach, Q] = atmosModel(h,v);
 
-%Setting Initial Conditions
-v_x(1) = v_o*cosd(angle);
-v_y(1) = v_o*sind(angle);
-x_x(1) = 0;
-x_y(1) = 0;
-timeArray(1) = 0;
-lock = false;
-for i = 2:totalPoints %Iterating using Euler
-    timeArray(i) = timeArray(i-1)+deltaT;
-    [t_x,p_x, density_x, mach_x, Q_x] = atmosModel(x_y(i-1), v_x(i-1));
-    [t_y,p_y, density_y, mach_y, Q_y] = atmosModel(x_y(i-1), v_y(i-1));
-    k_x = (1/2)*CA_model(mach_x)*density_x*A;
-    k_y = (1/2)*CA_model(mach_y)*density_y*A;
-    vMag = sqrt(v_x(i-1)^2+v_y(i-1)^2);
-    a_x(i-1) = (-k_x*vMag*v_x(i-1))/m;
-    a_y(i-1) = -g - (k_y*vMag*v_y(i-1))/m;
-    v_x(i) = v_x(i-1) + a_x(i-1)*deltaT;
-    v_y(i) = v_y(i-1) + a_y(i-1)*deltaT;
-    x_x(i) = x_x(i-1) + v_x(i-1)*deltaT;
-    x_y(i) = bufferAboveZero(x_y(i-1) + v_y(i-1)*deltaT); 
-    %BufferAboveZero Prevents projectile from going under ground!
-    if((x_y(i) <= 0)&&(~lock))
-        lock = true; 
-        %lock Prevents statement from running again once we have an answer
-        timef = timeArray(i);
-        velf = sqrt((v_x(i))^2 + (v_y(i)^2));
-        distancef = x_x(i);
-    end
+G = 20;
+sRef = pi()*(diameter/2)^2;
+Cnalpha = (G*mass*9.8)/(alpha*Q*sRef);
+disp("Cnalpha:");
+disp(Cnalpha);
+
+[t,p,density, mach, Q] = atmosModel(25002, 0);
+
+function r = celToRankine(c)
+    r = (c + 273.15) * (9/5);
 end
+
+function metersPerSecond = feetPS_to_metersPS(feetPerSecond)
+    metersPerSecond = feetPerSecond*0.3048;
 end
+
 ##### SOURCE END #####
 --></body></html>

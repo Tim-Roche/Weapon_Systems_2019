@@ -4,6 +4,7 @@
 function [x_x, y_x, x_v, y_v, x_a, y_a, time_array, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC)
 g = -9.8;
 
+%Splitting v_o (initial vel.) into components...
 v_ox = v_o*cosd(angle);
 v_oy = v_o*sind(angle);
 

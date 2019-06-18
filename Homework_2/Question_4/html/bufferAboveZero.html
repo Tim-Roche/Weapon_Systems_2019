@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>atmosModelDriver</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-16"><meta name="DC.source" content="atmosModelDriver.m"><style type="text/css">
+      --><title>bufferAboveZero</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-17"><meta name="DC.source" content="bufferAboveZero.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,82 +68,29 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
   </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Timothy Roche</span>
 <span class="comment">%Weapon Systems</span>
-<span class="comment">%Test Program for Question 1: AtmosDriver</span>
-
-test_height = 25002;
-test_velocity = 200;
-
-[t,p,density, mach, Q] = atmosModel(test_height, test_velocity);
-disp(<span class="string">"t"</span>)
-disp(t);
-disp(<span class="string">"p"</span>);
-disp(p);
-disp(<span class="string">"mach"</span>);
-disp(mach);
-disp(<span class="string">"Q"</span>);
-disp(Q);
-
-data = []
-x = 1:100:30000;
-hold <span class="string">on</span>;
-<span class="keyword">for</span> v = 1:500:3000
-    <span class="keyword">for</span> h = x
-        [t,p, density, mach, Q] = atmosModel(h, 100);
-        data = [data, p];
+<span class="comment">%For Question 4</span>
+<span class="comment">%Makes sure the graphs dont go below the ground</span>
+<span class="comment">%Function acts like a buffer (passes through the data)</span>
+<span class="comment">%unless if the datapoint is below 0</span>
+<span class="keyword">function</span> buffered = bufferAboveZero(data)
+    buffered = data;
+    <span class="keyword">if</span>(data &lt; 0)
+        buffered = 0;
     <span class="keyword">end</span>
-    plot(x/1000,data);
-    data = [];
 <span class="keyword">end</span>
-hold <span class="string">off</span>;
-</pre><pre class="codeoutput">t
-  -56.4540
-
-p
-    2.4820
-
-mach
-    0.6780
-
-Q
-  798.6370
-
-
-data =
-
-     []
-
-</pre><img vspace="5" hspace="5" src="atmosModelDriver_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %Timothy Roche
 %Weapon Systems
-%Test Program for Question 1: AtmosDriver
-
-test_height = 25002;
-test_velocity = 200;
-
-[t,p,density, mach, Q] = atmosModel(test_height, test_velocity);
-disp("t")
-disp(t);
-disp("p");
-disp(p);
-disp("mach");
-disp(mach);
-disp("Q");
-disp(Q);
-
-data = []
-x = 1:100:30000;
-hold on;
-for v = 1:500:3000
-    for h = x
-        [t,p, density, mach, Q] = atmosModel(h, 100);
-        data = [data, p];
+%For Question 4
+%Makes sure the graphs dont go below the ground
+%Function acts like a buffer (passes through the data) 
+%unless if the datapoint is below 0
+function buffered = bufferAboveZero(data)
+    buffered = data;  
+    if(data < 0)
+        buffered = 0;
     end
-    plot(x/1000,data);
-    data = [];
 end
-hold off;
-
-
 ##### SOURCE END #####
 --></body></html>
