@@ -6,4 +6,3 @@ for i = 0:50
 end
 
 plotData(value, newModel, "New CA Model","Value", "Output", 2,1,1,-inf,inf);
-

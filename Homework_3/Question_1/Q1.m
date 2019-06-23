@@ -13,14 +13,14 @@ mdot = G*(mBO/Isp);
 F = Isp*mdot*g;
 
 [wSeries, aSeries, timeSeries, v_45_Series, v_Series, tBO] = massAndA(mdot, mo, mBO, Isp, Ve, VBO, incTime, RUNTIME);
-plotData(timeSeries, wSeries, "Weight VS Time", "Time (s)", "Weight (kg)", 1,4, 1, -inf, inf);
+plotData(timeSeries, wSeries, "Weight VS Time", "Time (s)", "Weight (kg)", 1,4, 1, -inf, tBO);
 ylim([0 inf]);
 
-plotData(timeSeries, aSeries, "Acc. VS Time", "Time (s)", "Acceleration (G)", 1,4, 2, -inf, inf);
+plotData(timeSeries, aSeries, "Acc. VS Time", "Time (s)", "Acceleration (G)", 1,4, 2, -inf, tBO);
 
-plotData(timeSeries, v_45_Series, "Vel. VS Time w/ Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 3, -inf, inf);
+plotData(timeSeries, v_45_Series, "Vel. VS Time w/ Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 3, -inf, tBO);
 
-plotData(timeSeries, v_Series, "Vel. VS Time No Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 4, -inf, inf);
+plotData(timeSeries, v_Series, "Vel. VS Time No Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 4, -inf, tBO);
 
 disp("I_SP Required: " + string(Isp));
 disp("V_E Computed: " + string(Ve) + " m/s");
@@ -36,7 +36,7 @@ function [mSeries, aSeries, timeSeries, v_Series, v_45_Series, tBO] = massAndA(m
     
     tBO = (mBO-mo)/(-1*mdot); %Calculating TBO
     
-    vo = VBO - Ve*log(mo/mBO) + sind(45)*9.81*tBO;
+    vo = VBO - Ve*log(mo/mBO);% + sind(45)*9.81*tBO;
     vo_45 = VBO - Ve*log(mo/mBO)+ sind(45)*9.81*tBO;
     
     for i = 1:totalPoints
@@ -45,13 +45,6 @@ function [mSeries, aSeries, timeSeries, v_Series, v_45_Series, tBO] = massAndA(m
         aSeries(i) = (Isp*mdot)/(mSeries(i));
         v_45_Series(i) = vo_45 + Ve*log(mo/mSeries(i)) - sind(45)*-9.81*t;
         v_Series(i) = vo + Ve*log(mo/mSeries(i));
-        if(mSeries(i) < mBO) %Post Burn-out
-            mSeries(i) = mBO; 
-            aSeries(i) = 0;
-            v_45_Series(i) = v_45_Series(i-1);
-            v_Series(i) = v_Series(i-1);
-        end
         timeSeries(i) = t;
     end
-    
 end
