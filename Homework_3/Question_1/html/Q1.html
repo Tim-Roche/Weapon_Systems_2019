@@ -1,0 +1,175 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Q1</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-24"><meta name="DC.source" content="Q1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">incTime = 0.1;
+RUNTIME = 9; <span class="comment">%Seconds</span>
+
+VBO = 1000; <span class="comment">%m/s</span>
+mBO = 500; <span class="comment">%Mass at Burn out</span>
+mF = 300; <span class="comment">%Mass of fuel</span>
+mo = mBO+mF; <span class="comment">%Initial Mass</span>
+g = -9.81; <span class="comment">%m/s^2</span>
+G = 15;
+Isp = -1*VBO/(g*log((mBO+mF)/mBO)); <span class="comment">%Compute the ISP required</span>
+Ve =  -1*g*Isp; <span class="comment">%Compute Exit Velocity</span>
+mdot = G*(mBO/Isp);
+F = Isp*mdot*g;
+
+[wSeries, aSeries, timeSeries, v_45_Series, v_Series, tBO] = massAndA(mdot, mo, mBO, Isp, Ve, VBO, incTime, RUNTIME);
+plotData(timeSeries, wSeries, <span class="string">"Weight VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Weight (kg)"</span>, 1,4, 1, -inf, tBO);
+ylim([0 inf]);
+
+plotData(timeSeries, aSeries, <span class="string">"Acc. VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Acceleration (G)"</span>, 1,4, 2, -inf, tBO);
+
+plotData(timeSeries, v_45_Series, <span class="string">"Vel. VS Time w/ Gravity"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Velocity (m/s)"</span>, 1, 4, 3, -inf, tBO);
+
+plotData(timeSeries, v_Series, <span class="string">"Vel. VS Time No Gravity"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Velocity (m/s)"</span>, 1, 4, 4, -inf, tBO);
+
+disp(<span class="string">"I_SP Required: "</span> + string(Isp) + <span class="string">" s"</span>);
+disp(<span class="string">"V_E Computed: "</span> + string(Ve) + <span class="string">" m/s"</span>);
+disp(<span class="string">"Burn time of Rocket: "</span> + string(tBO) + <span class="string">" s"</span>);
+
+<span class="keyword">function</span> [mSeries, aSeries, timeSeries, v_Series, v_45_Series, tBO] = massAndA(mdot, mo, mBO, Isp, Ve, VBO, incTime, endTime)
+    totalPoints = floor(endTime/incTime);
+    mSeries = zeros(1, totalPoints);
+    aSeries = zeros(1, totalPoints);
+    v_45_Series = zeros(1, totalPoints);
+    v_Series = zeros(1, totalPoints);
+    timeSeries = zeros(1, totalPoints);
+
+    tBO = (mBO-mo)/(-1*mdot); <span class="comment">%Calculating TBO</span>
+
+    vo = VBO - Ve*log(mo/mBO);<span class="comment">% + sind(45)*9.81*tBO;</span>
+    vo_45 = VBO - Ve*log(mo/mBO)+ sind(45)*9.81*tBO;
+
+    <span class="keyword">for</span> i = 1:totalPoints
+        t = i*incTime;
+        mSeries(i) = -1*mdot*t + mo; <span class="comment">%y = mx + b</span>
+        aSeries(i) = (Isp*mdot)/(mSeries(i));
+        v_45_Series(i) = vo_45 + Ve*log(mo/mSeries(i)) - sind(45)*-9.81*t;
+        v_Series(i) = vo + Ve*log(mo/mSeries(i));
+        timeSeries(i) = t;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">I_SP Required: 216.8851 s
+V_E Computed: 2127.6431 m/s
+Burn time of Rocket: 8.6754 s
+</pre><img vspace="5" hspace="5" src="Q1_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+incTime = 0.1;
+RUNTIME = 9; %Seconds
+
+VBO = 1000; %m/s
+mBO = 500; %Mass at Burn out
+mF = 300; %Mass of fuel
+mo = mBO+mF; %Initial Mass
+g = -9.81; %m/s^2
+G = 15;
+Isp = -1*VBO/(g*log((mBO+mF)/mBO)); %Compute the ISP required 
+Ve =  -1*g*Isp; %Compute Exit Velocity
+mdot = G*(mBO/Isp);
+F = Isp*mdot*g;
+
+[wSeries, aSeries, timeSeries, v_45_Series, v_Series, tBO] = massAndA(mdot, mo, mBO, Isp, Ve, VBO, incTime, RUNTIME);
+plotData(timeSeries, wSeries, "Weight VS Time", "Time (s)", "Weight (kg)", 1,4, 1, -inf, tBO);
+ylim([0 inf]);
+
+plotData(timeSeries, aSeries, "Acc. VS Time", "Time (s)", "Acceleration (G)", 1,4, 2, -inf, tBO);
+
+plotData(timeSeries, v_45_Series, "Vel. VS Time w/ Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 3, -inf, tBO);
+
+plotData(timeSeries, v_Series, "Vel. VS Time No Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 4, -inf, tBO);
+
+disp("I_SP Required: " + string(Isp) + " s");
+disp("V_E Computed: " + string(Ve) + " m/s");
+disp("Burn time of Rocket: " + string(tBO) + " s");
+
+function [mSeries, aSeries, timeSeries, v_Series, v_45_Series, tBO] = massAndA(mdot, mo, mBO, Isp, Ve, VBO, incTime, endTime)
+    totalPoints = floor(endTime/incTime);
+    mSeries = zeros(1, totalPoints);
+    aSeries = zeros(1, totalPoints);
+    v_45_Series = zeros(1, totalPoints);
+    v_Series = zeros(1, totalPoints);
+    timeSeries = zeros(1, totalPoints);
+    
+    tBO = (mBO-mo)/(-1*mdot); %Calculating TBO
+    
+    vo = VBO - Ve*log(mo/mBO);% + sind(45)*9.81*tBO;
+    vo_45 = VBO - Ve*log(mo/mBO)+ sind(45)*9.81*tBO;
+    
+    for i = 1:totalPoints
+        t = i*incTime;
+        mSeries(i) = -1*mdot*t + mo; %y = mx + b
+        aSeries(i) = (Isp*mdot)/(mSeries(i));
+        v_45_Series(i) = vo_45 + Ve*log(mo/mSeries(i)) - sind(45)*-9.81*t;
+        v_Series(i) = vo + Ve*log(mo/mSeries(i));
+        timeSeries(i) = t;
+    end
+end
+##### SOURCE END #####
+--></body></html>

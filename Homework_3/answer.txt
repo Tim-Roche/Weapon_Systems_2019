@@ -1,0 +1,1 @@
+I believe that the projectile did not always have 1 G upwards because of the angle of attack shifting that 1 G of upwards force backwards resulting in less than or equal to 1 G depending on the angle of attack.

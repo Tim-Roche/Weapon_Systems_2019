@@ -7,88 +7,78 @@
 SIM_RUNTIME = 105; %seconds
 INC = 0.01; %New datapoint every x seconds
 v_o = 500; %Initial velocity magnitude
-diameter = 0.182; 
-m = 200; %kg
-
-START_ANGLE = 10;
-END_ANGLE = 60;
-INC_ANGLE = 5;
+diameter = 0.3; 
+m = 250; %kg
 %--------------------------
-totalAPoints = floor((END_ANGLE - START_ANGLE)/(INC_ANGLE))+1;
 
 total_points = floor(SIM_RUNTIME/INC);
 A = pi()*(diameter/2)^2;
-angles = START_ANGLE:INC_ANGLE:END_ANGLE;
+angles = 10:10:80;
 %-------------Part 1----------------
-dis_x = zeros(totalAPoints, total_points+1);
-dis_y = zeros(totalAPoints, total_points+1);
-vel_x = zeros(totalAPoints, total_points+1);
-vel_y = zeros(totalAPoints, total_points+1);
-acc_x = zeros(totalAPoints, total_points+1);
-acc_y = zeros(totalAPoints, total_points+1);
-timeNoAir = zeros(totalAPoints, total_points+1);
-distanceFinal = zeros(1,totalAPoints);
-velFinal = zeros(1,totalAPoints);
-
-%Simuating No Air Resistance...
-maxDistanceND = 0;
-maxTimeND = 0;
+dis_x_Old = zeros(8, total_points);
+dis_y_Old = zeros(8, total_points);
+vel_x_Old = zeros(8, total_points);
+vel_y_Old = zeros(8, total_points);
+acc_x_Old = zeros(8, total_points);
+acc_y_Old = zeros(8, total_points);
+timeOld = zeros(8, total_points);
+distanceFinal_Old = zeros(1,8);
+velFinal_Old = zeros(1,8);
+maxDistanceD = 0;
+maxTimeD = 0;
 %Collecting Data...
-for i = 1:totalAPoints
-angle = i*INC_ANGLE;
-[x_x, y_x, x_v, y_v, x_a, y_a, time, timef, distancef, velf] = PM_noAir(angle, v_o, total_points, INC);
-dis_x(i,:) = x_x;
-dis_y(i,:) = y_x;
-vel_x(i,:) = x_v;
-vel_y(i,:) = y_v;
-acc_x(i,:) = x_a;
-acc_y(i,:) = y_a;
-timeNoAir(i,:) = time;
+for i = 1:8
+angle = i*10;
+[x_a_Old, y_a_Old, x_v_Old, y_v_Old, x_x_Old, y_x_Old, time_Old, timef_Old, distancef_Old, velf_Old] = PM_withAirResistance_old(m, A, v_o, angle, INC, SIM_RUNTIME);
+dis_x_Old(i,:) = x_x_Old;
+dis_y_Old(i,:) = y_x_Old;
+vel_x_Old(i,:) = x_v_Old;
+vel_y_Old(i,:) = y_v_Old;
+acc_x_Old(i,:) = x_a_Old;
+acc_y_Old(i,:) = y_a_Old;
+timeOld(i,:) = time_Old;
 
-distanceFinal(:,i) = distancef;
-velFinal(:,i) = velf;
-if(distancef > maxDistanceND)
-    maxDistanceND = distancef;
-end
-if(timef > maxTimeND)
-    maxTimeND = timef;
-end
-end
+distanceFinal_Old(:,i) = distancef_Old;
+velFinal_Old(:,i) = velf_Old;
 
-subPlotX = 2;
-subPlotY = 5;
+if(distancef_Old > maxDistanceD)
+    maxDistanceD = distancef_Old;
+end
+if(timef_Old > maxTimeD) %Stops graphs from sitting at 0 after landing
+    maxTimeD = timef_Old;
+end
+end
 
 fig1 = figure(1);
 set(fig1, 'Position', [0 0 800 550])
+subPlotX = 2;
+subPlotY = 5;
+subplot(subPlotX,subPlotY,1);
 
-sgtitle("Projectile Motion -- No Air Resistance");
-plotData(timeNoAir, dis_x/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 1, 0, maxTimeND);
-plotData(timeNoAir, dis_y/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2, 0, maxTimeND)
-plotData(timeNoAir, vel_x, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3, 0, maxTimeND);  
-plotData(timeNoAir, vel_y, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4, 0, maxTimeND); 
-plotData(timeNoAir, acc_x/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5, 0, maxTimeND);
-plotData(timeNoAir, acc_y/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6, 0, maxTimeND);
-plotData(angles, distanceFinal/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
-plotData(angles, velFinal, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
-ylim([480, 520]); %Fixes some weird labeling issues the graph was having
+sgtitle("Projectile Motion -- With Old CA Values");
+plotData(timeOld, dis_x_Old/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 1,0,maxTimeD);
+plotData(timeOld, dis_y_Old/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2,0,maxTimeD)
+plotData(timeOld, vel_x_Old, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3,0,maxTimeD);  
+plotData(timeOld, vel_y_Old, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,4,0,maxTimeD); 
+plotData(timeOld, acc_x_Old/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,5,0,maxTimeD);
+plotData(timeOld, acc_y_Old/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
+plotData(angles, distanceFinal_Old/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
+plotData(angles, velFinal_Old, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
 
-%Simulating with Air Resistance modeled as kv^2
-dis_x_Drag = zeros(totalAPoints, total_points);
-dis_y_Drag = zeros(totalAPoints, total_points);
-vel_x_Drag = zeros(totalAPoints, total_points);
-vel_y_Drag = zeros(totalAPoints, total_points);
-acc_x_Drag = zeros(totalAPoints, total_points);
-acc_y_Drag = zeros(totalAPoints, total_points);
-timeDrag = zeros(totalAPoints, total_points);
-distanceFinal_Drag = zeros(1,totalAPoints);
-velFinal_Drag = zeros(1,totalAPoints);
-
-maxDistanceD = 0;
-maxTimeD = 0;
+%---------------------------------
+dis_x_Drag = zeros(8, total_points);
+dis_y_Drag = zeros(8, total_points);
+vel_x_Drag = zeros(8, total_points);
+vel_y_Drag = zeros(8, total_points);
+acc_x_Drag = zeros(8, total_points);
+acc_y_Drag = zeros(8, total_points);
+timeDrag = zeros(8, total_points);
+distanceFinal_Drag = zeros(1,8);
+velFinal_Drag = zeros(1,8);
 
 %Collecting Data...
-for i = 1:totalAPoints
-angle = i*INC_ANGLE;
+for i = 1:8
+angle = i*10;
 [x_a_Drag, y_a_Drag, x_v_Drag, y_v_Drag, x_x_Drag, y_x_Drag, time_Drag, timef_Drag, distancef_Drag, velf_Drag] = PM_withAirResistance(m, A, v_o, angle, INC, SIM_RUNTIME);
 dis_x_Drag(i,:) = x_x_Drag;
 dis_y_Drag(i,:) = y_x_Drag;
@@ -115,7 +105,7 @@ subPlotX = 2;
 subPlotY = 5;
 subplot(subPlotX,subPlotY,1);
 
-sgtitle("Projectile Motion -- With Quadratic Air Resistance");
+sgtitle("Projectile Motion -- With New CA Values");
 plotData(timeDrag, dis_x_Drag/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 1,0,maxTimeD);
 plotData(timeDrag, dis_y_Drag/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,2,0,maxTimeD)
 plotData(timeDrag, vel_x_Drag, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,3,0,maxTimeD);  
@@ -124,12 +114,6 @@ plotData(timeDrag, acc_x_Drag/-9.8, "X-Acceleration VS Time", "Time (s)", "X-Acc
 plotData(timeDrag, acc_y_Drag/-9.8, "Y-Acceleration VS Time", "Time (s)", "Y-Acc. (G)",subPlotX,subPlotY,6,0,maxTimeD);
 plotData(angles, distanceFinal_Drag/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 7, 10, inf);
 plotData(angles, velFinal_Drag, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 8, 10, inf);
-
-%Bonus Graph
-figure(3);
-sgtitle("Projectile Motion -- Distance VS Height");
-plotData(dis_x/1000, dis_y/1000, "No Air Resistance", "Distance (km)", "Height (km)",2,1,1,0, (maxDistanceND/1000));
-plotData(dis_x_Drag/1000, dis_y_Drag/1000, "With kv^2 Air Resistance", "Distance (km)", "Height (km)",2,1,2,0, (maxDistanceD/1000));
 
 %----------Functions-------------
 

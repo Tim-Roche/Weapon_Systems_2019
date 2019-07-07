@@ -1,0 +1,249 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Question2_2</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-24"><meta name="DC.source" content="Question2_2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Iteration</span>
+INC = 0.01;
+SIM_LEN = 150;
+totalPoints = floor(SIM_LEN/INC);
+angles = 10:5:60;
+totalAngles = numel(angles);
+
+<span class="comment">%Given Conditions</span>
+diameter = 0.182;
+alpha_max = 30;
+h = 10000;
+v = 600;
+mass = 200;
+g = 9.81;
+G = 20;
+Nc = mass*g;
+
+<span class="comment">%CN_Alpha Calculation</span>
+[t,p, density, mach, Q] = atmosModel(h,v);
+sRef = pi()*(diameter/2)^2;
+alpha_max_RAD = (alpha_max*pi())/180;
+cnalpha = (G*mass*g)/(alpha_max_RAD*Q*sRef);
+
+disp(<span class="string">"CNalpha = "</span> + string(cnalpha));
+
+dis_x = zeros(totalAngles, totalPoints);
+dis_y = zeros(totalAngles, totalPoints);
+vel_x = zeros(totalAngles, totalPoints);
+vel_y = zeros(totalAngles, totalPoints);
+acc_x = zeros(totalAngles, totalPoints);
+acc_y = zeros(totalAngles, totalPoints);
+AoA_all = zeros(totalAngles, totalPoints);
+aDrag_all =  zeros(totalAngles, totalPoints);
+iDrag_all = zeros(totalAngles, totalPoints);
+aUp_all = zeros(totalAngles, totalPoints);
+timeNoAir = zeros(totalAngles, totalPoints);
+distanceFinal = zeros(1,totalAngles);
+velFinal = zeros(1,totalAngles);
+
+maxDistanceND = 0;
+maxTimeND = 0;
+<span class="comment">%Collecting Data...</span>
+<span class="keyword">for</span> i = 1:totalAngles
+gamma = angles(i);
+[x_a, y_a, x_v, y_v, x_x, y_x, AoA, timeArray, timef, distancef, velf, accNBody, aDrag, iDrag, aUp] = PMwithNormalForce(cnalpha, gamma, Nc, mass, sRef, INC, totalPoints);
+dis_x(i,:) = x_x;
+dis_y(i,:) = y_x;
+vel_x(i,:) = x_v;
+vel_y(i,:) = y_v;
+acc_x(i,:) = x_a;
+acc_y(i,:) = y_a;
+aDrag_all(i,:) = aDrag;
+iDrag_all(i,:) = iDrag;
+aUp_all(i,:) = aUp;
+timeNoAir(i,:) = timeArray;
+AoA_all(i, :) = AoA;
+distanceFinal(:,i) = distancef;
+velFinal(:,i) = velf;
+<span class="keyword">if</span>(distancef &gt; maxDistanceND)
+    maxDistanceND = distancef;
+<span class="keyword">end</span>
+<span class="keyword">if</span>(timef &gt; maxTimeND)
+    maxTimeND = timef;
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+fig1 = figure(1);
+subPlotY = 2;
+subPlotX = 6;
+plotData(dis_x/1000, dis_y/1000, <span class="string">"Distance VS Height"</span>, <span class="string">"Distance (km)"</span>, <span class="string">"Height (km)"</span>, subPlotX, subPlotY, 1, 0, maxDistanceND/1000);
+ylim([0 inf]);
+plotData(timeNoAir, AoA_all, <span class="string">"AoA"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Angle"</span>, subPlotX, subPlotY, 2, -inf, inf);
+plotData(timeNoAir, dis_x/1000,  <span class="string">"Distance VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Distance (km)"</span>,subPlotX, subPlotY, 3, 0, maxTimeND);
+ylim([0 inf]);
+plotData(timeNoAir, dis_y/1000, <span class="string">"Height VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Height (km)"</span>, subPlotX,subPlotY,4, 0, maxTimeND)
+ylim([0 inf]);
+plotData(timeNoAir, vel_x, <span class="string">"X-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Vel. (m/s)"</span>, subPlotX,subPlotY,5, 0, maxTimeND);
+plotData(timeNoAir, vel_y, <span class="string">"Y-Velocity VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Y-Vel. (m/s)"</span>, subPlotX,subPlotY,6, 0, maxTimeND);
+plotData(timeNoAir, acc_x/-9.81, <span class="string">"X-Acceleration VS Time"</span>, <span class="string">"Time (s)"</span>, <span class="string">"X-Acc. (G)"</span>,subPlotX,subPlotY,7, 0, maxTimeND);
+
+plotData(timeNoAir, aDrag_all, <span class="string">"Axial Drag"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Drag (N)"</span>,subPlotX,subPlotY,8, 0, maxTimeND);
+plotData(timeNoAir, iDrag_all, <span class="string">"Induced Drag"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Drag (N)"</span>,subPlotX,subPlotY,9, 0, maxTimeND);
+
+plotData(angles, distanceFinal/1000, <span class="string">"Launch Angle Vs Distance"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Distance (km)"</span>, subPlotX, subPlotY, 10, 10, inf);
+plotData(angles, velFinal, <span class="string">"Launch Angle Vs Final Velocity"</span>, <span class="string">"Launch Angle (degrees)"</span>, <span class="string">"Final Vel. (m/s)"</span>, subPlotX, subPlotY, 11, 10, inf);
+plotData(timeNoAir, aUp_all/9.81, <span class="string">"Gs Up"</span>, <span class="string">"Time (s)"</span>, <span class="string">"Acc. Up (G)"</span>,subPlotX,subPlotY,12, 0, maxTimeND);
+
+set(fig1, <span class="string">'Position'</span>, [0 0 1250 1250])
+</pre><pre class="codeoutput">CNalpha = 38.656
+</pre><img vspace="5" hspace="5" src="Question2_2_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Iteration 
+INC = 0.01;
+SIM_LEN = 150;
+totalPoints = floor(SIM_LEN/INC);
+angles = 10:5:60;
+totalAngles = numel(angles);
+
+%Given Conditions
+diameter = 0.182;
+alpha_max = 30;
+h = 10000;
+v = 600;
+mass = 200;
+g = 9.81;
+G = 20;
+Nc = mass*g;
+
+%CN_Alpha Calculation
+[t,p, density, mach, Q] = atmosModel(h,v);
+sRef = pi()*(diameter/2)^2;
+alpha_max_RAD = (alpha_max*pi())/180;
+cnalpha = (G*mass*g)/(alpha_max_RAD*Q*sRef);
+
+disp("CNalpha = " + string(cnalpha));
+
+dis_x = zeros(totalAngles, totalPoints);
+dis_y = zeros(totalAngles, totalPoints);
+vel_x = zeros(totalAngles, totalPoints);
+vel_y = zeros(totalAngles, totalPoints);
+acc_x = zeros(totalAngles, totalPoints);
+acc_y = zeros(totalAngles, totalPoints);
+AoA_all = zeros(totalAngles, totalPoints);
+aDrag_all =  zeros(totalAngles, totalPoints);
+iDrag_all = zeros(totalAngles, totalPoints);
+aUp_all = zeros(totalAngles, totalPoints);
+timeNoAir = zeros(totalAngles, totalPoints);
+distanceFinal = zeros(1,totalAngles);
+velFinal = zeros(1,totalAngles);
+
+maxDistanceND = 0;
+maxTimeND = 0;
+%Collecting Data...
+for i = 1:totalAngles
+gamma = angles(i);
+[x_a, y_a, x_v, y_v, x_x, y_x, AoA, timeArray, timef, distancef, velf, accNBody, aDrag, iDrag, aUp] = PMwithNormalForce(cnalpha, gamma, Nc, mass, sRef, INC, totalPoints);
+dis_x(i,:) = x_x;
+dis_y(i,:) = y_x;
+vel_x(i,:) = x_v;
+vel_y(i,:) = y_v;
+acc_x(i,:) = x_a;
+acc_y(i,:) = y_a;
+aDrag_all(i,:) = aDrag;
+iDrag_all(i,:) = iDrag;
+aUp_all(i,:) = aUp;
+timeNoAir(i,:) = timeArray;
+AoA_all(i, :) = AoA;
+distanceFinal(:,i) = distancef;
+velFinal(:,i) = velf;
+if(distancef > maxDistanceND)
+    maxDistanceND = distancef;
+end
+if(timef > maxTimeND)
+    maxTimeND = timef;
+end
+end
+
+fig1 = figure(1);
+subPlotY = 2;
+subPlotX = 6;
+plotData(dis_x/1000, dis_y/1000, "Distance VS Height", "Distance (km)", "Height (km)", subPlotX, subPlotY, 1, 0, maxDistanceND/1000);
+ylim([0 inf]);
+plotData(timeNoAir, AoA_all, "AoA", "Time (s)", "Angle", subPlotX, subPlotY, 2, -inf, inf);
+plotData(timeNoAir, dis_x/1000,  "Distance VS Time", "Time (s)", "Distance (km)",subPlotX, subPlotY, 3, 0, maxTimeND);
+ylim([0 inf]);
+plotData(timeNoAir, dis_y/1000, "Height VS Time", "Time (s)", "Height (km)", subPlotX,subPlotY,4, 0, maxTimeND)
+ylim([0 inf]);
+plotData(timeNoAir, vel_x, "X-Velocity VS Time", "Time (s)", "X-Vel. (m/s)", subPlotX,subPlotY,5, 0, maxTimeND);  
+plotData(timeNoAir, vel_y, "Y-Velocity VS Time", "Time (s)", "Y-Vel. (m/s)", subPlotX,subPlotY,6, 0, maxTimeND); 
+plotData(timeNoAir, acc_x/-9.81, "X-Acceleration VS Time", "Time (s)", "X-Acc. (G)",subPlotX,subPlotY,7, 0, maxTimeND);
+
+plotData(timeNoAir, aDrag_all, "Axial Drag", "Time (s)", "Drag (N)",subPlotX,subPlotY,8, 0, maxTimeND);
+plotData(timeNoAir, iDrag_all, "Induced Drag", "Time (s)", "Drag (N)",subPlotX,subPlotY,9, 0, maxTimeND);
+
+plotData(angles, distanceFinal/1000, "Launch Angle Vs Distance", "Launch Angle (degrees)", "Distance (km)", subPlotX, subPlotY, 10, 10, inf);
+plotData(angles, velFinal, "Launch Angle Vs Final Velocity", "Launch Angle (degrees)", "Final Vel. (m/s)", subPlotX, subPlotY, 11, 10, inf);
+plotData(timeNoAir, aUp_all/9.81, "Gs Up", "Time (s)", "Acc. Up (G)",subPlotX,subPlotY,12, 0, maxTimeND);
+
+set(fig1, 'Position', [0 0 1250 1250])
+##### SOURCE END #####
+--></body></html>

@@ -22,7 +22,7 @@ plotData(timeSeries, v_45_Series, "Vel. VS Time w/ Gravity", "Time (s)", "Veloci
 
 plotData(timeSeries, v_Series, "Vel. VS Time No Gravity", "Time (s)", "Velocity (m/s)", 1, 4, 4, -inf, tBO);
 
-disp("I_SP Required: " + string(Isp));
+disp("I_SP Required: " + string(Isp) + " s");
 disp("V_E Computed: " + string(Ve) + " m/s");
 disp("Burn time of Rocket: " + string(tBO) + " s");
 

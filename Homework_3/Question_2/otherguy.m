@@ -37,7 +37,7 @@ xd0 = 600;                    % m/s Intitial speed
 
 % Solve for CN_alpha
 %Nmax = mass*Amax_g*G = (CN_alpha)*alim*sref*Q
-a = atmosphericModel(Amax_alt, norm(xd0));
+a = atmosModel(Amax_alt, norm(xd0));
 Nmax = (Amax_g*G)*mass;
 CNmax = Nmax / (sref*a.Q);
 CN_alpha = CNmax/alim;

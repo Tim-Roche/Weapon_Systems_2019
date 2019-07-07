@@ -1,0 +1,186 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>PM_withAirResistance</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-24"><meta name="DC.source" content="PM_withAirResistance.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Timothy Roche</span>
+<span class="comment">%Weapon Systems</span>
+<span class="comment">%Projectile Motion Simulator -- With Air Resistance</span>
+<span class="keyword">function</span> [a_x, a_y, v_x, v_y, x_x, x_y, timeArray, timef, distancef, velf] = PM_withAirResistance(m, A, v_o, angle, deltaT, simRunTime)
+<span class="comment">%Assuming Quadratic Air Resistance</span>
+g = 9.8;
+
+<span class="comment">%Initializing Final Trackers (Final time, final velocity, ...)</span>
+timef = 0;
+velf = 0;
+distancef = 0;
+totalPoints = floor(simRunTime/deltaT);
+timeArray = zeros(1, totalPoints);
+v_x = zeros(1, totalPoints);
+v_y = zeros(1, totalPoints);
+a_x = zeros(1, totalPoints);
+a_y = zeros(1, totalPoints);
+x_x = zeros(1, totalPoints);
+x_y = zeros(1, totalPoints);
+
+<span class="comment">%Setting Initial Conditions</span>
+v_x(1) = v_o*cosd(angle);
+v_y(1) = v_o*sind(angle);
+x_x(1) = 0;
+x_y(1) = 0;
+timeArray(1) = 0;
+lock = false;
+<span class="keyword">for</span> i = 2:totalPoints
+    <span class="comment">%kv^2 drag is unsolvable using dif. Eq.</span>
+    <span class="comment">%Iterating using Euler instead...</span>
+    timeArray(i) = timeArray(i-1)+deltaT;
+    [t_x,p_x, density_x, mach_x, Q_x] = atmosModel(x_y(i-1), v_x(i-1));
+    [t_y,p_y, density_y, mach_y, Q_y] = atmosModel(x_y(i-1),v_y(i-1));
+    <span class="comment">%k = (1/2)*density*Area*Drag_Constant</span>
+    k_x = (1/2)*CA_model(mach_x)*density_x*A;
+    k_y = (1/2)*CA_model(mach_y)*density_y*A;
+
+    vMag = sqrt(v_x(i-1)^2+v_y(i-1)^2); <span class="comment">%Path. Theorm</span>
+
+    <span class="comment">%Begin Iteration</span>
+    a_x(i-1) = (-k_x*vMag*v_x(i-1))/m;
+    a_y(i-1) = -g - (k_y*vMag*v_y(i-1))/m;
+    v_x(i) = v_x(i-1) + a_x(i-1)*deltaT;
+    v_y(i) = v_y(i-1) + a_y(i-1)*deltaT;
+    x_x(i) = x_x(i-1) + v_x(i-1)*deltaT;
+    x_y(i) = bufferAboveZero(x_y(i-1) + v_y(i-1)*deltaT);
+    <span class="comment">%BufferAboveZero Prevents projectile from going under ground!</span>
+
+    <span class="keyword">if</span>((x_y(i) &lt;= 0)&amp;&amp;(~lock)) <span class="comment">%This gets out final time, final vel...</span>
+        lock = true;
+        <span class="comment">%lock Prevents statement from running again once we have an answer</span>
+        timef = timeArray(i); <span class="comment">%Final time for the run</span>
+        velf = sqrt((v_x(i))^2 + (v_y(i)^2)); <span class="comment">%Final velocity for the run</span>
+        distancef = x_x(i); <span class="comment">%Final distance for the run</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Timothy Roche
+%Weapon Systems
+%Projectile Motion Simulator REPLACE_WITH_DASH_DASH With Air Resistance
+function [a_x, a_y, v_x, v_y, x_x, x_y, timeArray, timef, distancef, velf] = PM_withAirResistance(m, A, v_o, angle, deltaT, simRunTime)
+%Assuming Quadratic Air Resistance
+g = 9.8;
+
+%Initializing Final Trackers (Final time, final velocity, ...)
+timef = 0;
+velf = 0;
+distancef = 0;
+totalPoints = floor(simRunTime/deltaT);
+timeArray = zeros(1, totalPoints);
+v_x = zeros(1, totalPoints);
+v_y = zeros(1, totalPoints);
+a_x = zeros(1, totalPoints);
+a_y = zeros(1, totalPoints);
+x_x = zeros(1, totalPoints);
+x_y = zeros(1, totalPoints);
+
+%Setting Initial Conditions
+v_x(1) = v_o*cosd(angle);
+v_y(1) = v_o*sind(angle);
+x_x(1) = 0;
+x_y(1) = 0;
+timeArray(1) = 0;
+lock = false;
+for i = 2:totalPoints 
+    %kv^2 drag is unsolvable using dif. Eq. 
+    %Iterating using Euler instead...
+    timeArray(i) = timeArray(i-1)+deltaT;
+    [t_x,p_x, density_x, mach_x, Q_x] = atmosModel(x_y(i-1), v_x(i-1));
+    [t_y,p_y, density_y, mach_y, Q_y] = atmosModel(x_y(i-1),v_y(i-1));
+    %k = (1/2)*density*Area*Drag_Constant
+    k_x = (1/2)*CA_model(mach_x)*density_x*A; 
+    k_y = (1/2)*CA_model(mach_y)*density_y*A;
+    
+    vMag = sqrt(v_x(i-1)^2+v_y(i-1)^2); %Path. Theorm
+    
+    %Begin Iteration
+    a_x(i-1) = (-k_x*vMag*v_x(i-1))/m;
+    a_y(i-1) = -g - (k_y*vMag*v_y(i-1))/m;
+    v_x(i) = v_x(i-1) + a_x(i-1)*deltaT;
+    v_y(i) = v_y(i-1) + a_y(i-1)*deltaT;
+    x_x(i) = x_x(i-1) + v_x(i-1)*deltaT;
+    x_y(i) = bufferAboveZero(x_y(i-1) + v_y(i-1)*deltaT); 
+    %BufferAboveZero Prevents projectile from going under ground!
+    
+    if((x_y(i) <= 0)&&(~lock)) %This gets out final time, final vel...
+        lock = true; 
+        %lock Prevents statement from running again once we have an answer
+        timef = timeArray(i); %Final time for the run
+        velf = sqrt((v_x(i))^2 + (v_y(i)^2)); %Final velocity for the run
+        distancef = x_x(i); %Final distance for the run
+    end
+end
+end
+##### SOURCE END #####
+--></body></html>
