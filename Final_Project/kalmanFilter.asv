@@ -2,15 +2,21 @@
 %Final Project Weapon Systems
 %All Hail: http://www.ilectureonline.com/lectures/subject/SPECIAL%20TOPICS/26/190
 
-SIM_TIME = 30;
+SIM_TIME = 50;
 dt = 2;
-TOTAL_POINTS = 25;
+TOTAL_POINTS = int64(SIM_TIME/dt) + 1;
+
+time = 0:dt:SIM_TIME;
+
+%Defining Key Matrixes
+x = zeros(2, TOTAL_POINTS);
+p = zeros(2,2,TOTAL_POINTS);
 
 %Initial Condition
 P_0 = 0; %Initial Posistion
 V_0 = 200; %Initial Velocity
-x_p(:,1) = [P_0;V_0]; %x_prediction
-p_p(:,:,1) = [1; 1; 1; 1]; %Process Uncertanty
+x(:,1) = [P_0;V_0]; %x_prediction
+p(:,:,1) = [1, 1; 1, 1]; %Process Uncertanty
 
 %Measurement Errors
 R_true = 900;
@@ -34,16 +40,6 @@ W = 0.9*W_true;
 truth = zeros(2, TOTAL_POINTS);
 truth(:, 1) = [0; 200];
 
-x = zeros(2, TOTAL_POINTS);
-p = zeros(2,2,TOTAL_POINTS);
-
-%Get New Measured Value
-noiseX = normrnd(0, sqrt(R_true));
-measuredX = truth(1,i) + noiseX; %C*Y_m + z; 
-previousX = x(1, i-1);
-velocityCalc = (measuredX - previousX)/dt;
-Y = [measuredX; velocityCalc];
-
 for i = 2:TOTAL_POINTS
     B = [(1/2)*dt^2; dt];
     
@@ -56,9 +52,7 @@ for i = 2:TOTAL_POINTS
     measuredX = truth(1,i) + noiseX;%C*Y_m + z; 
     previousX = x(1, i-1);
     z = previousX;
-    %velocityCalc = (measuredX - previousX)/dt;
-    %Y = [measuredX; velocityCalc];
-    
+
     %Process Noise
     Q = [(1/4)*dt^4, (1/2)*dt^3; (1/2)*dt^3, dt^2]*W;
     
@@ -72,6 +66,17 @@ for i = 2:TOTAL_POINTS
     %Calculate Current State
     x(:, i) = x_pC + KG*(z - H*x_pC);
     p(:, :, i) = (eye(2) - KG*H)*p_pC*(eye(2)-KG*H).'+KG*R*KG.';
-    
-    disp(x(:,i));
 end
+
+figure(1);
+posP = zeros(1,TOTAL_POINTS); 
+deltaX = x - truth
+for i = 1:TOTAL_POINTS
+    posP(i) = p(1,1,i);
+end
+
+threeSigmaAbove = 3*sqrt(posP);
+hold on
+plot(time, threeSigmaAbove);
+plot(time, -threeSigmaAbove);
+hold off
