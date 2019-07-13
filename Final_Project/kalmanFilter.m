@@ -3,7 +3,7 @@
 %All Hail: http://www.ilectureonline.com/lectures/subject/SPECIAL%20TOPICS/26/190
 
 SIM_TIME = 50;
-dt = 0.01;
+dt = 2;
 TOTAL_POINTS = int64(SIM_TIME/dt) + 1;
 
 time = 0:dt:SIM_TIME;
@@ -37,10 +37,10 @@ W_true = 12;
 W = 0.9*W_true;
 
 truth = zeros(2, TOTAL_POINTS);
-truth(:, 1) = [0; 200];
+truth(:, 1) = [P_0; V_0];
 
 for i = 2:TOTAL_POINTS
-    B = [(1/2)*dt^2; dt];
+    B = [(1/2)*dt^2; dt]; %Control Matrix for accel.
     
     %Find true posistion
     noiseA = normrnd(0, sqrt(W_true));
@@ -66,17 +66,30 @@ for i = 2:TOTAL_POINTS
     p(:, :, i) = (eye(2) - KG*H)*p_pC; %(eye(2) - KG*H)*p_pC*(eye(2)-KG*H).'+KG*R*KG.';
 end
 
-figure(1);
-posP = zeros(1,TOTAL_POINTS); 
+posP = zeros(1,TOTAL_POINTS);
+velP = zeros(1,TOTAL_POINTS); 
 deltaX = zeros(1, TOTAL_POINTS);
+deltaV = zeros(1, TOTAL_POINTS);
 for i = 1:TOTAL_POINTS
     posP(i) = p(1,1,i);
+    velP(i) = p(2,2,i);
     deltaX(i) = x(1,i) - truth(1, i);
+    deltaV(i) = x(2,i) - truth(2, i);
 end
 
-threeSigmaAbove = 3*sqrt(posP);
+figure(1);
+plotFilter("Posistion", "Difference (m)", posP, time, deltaX);
+figure(2);
+plotFilter("Velocity", "Difference (m/s)", velP, time, deltaV);
+
+function plotFilter(name, yl, P, time, delta)
+title(name);
+threeSigmaAbove = 3*sqrt(P);
 hold on
 plot(time, threeSigmaAbove, 'LineWidth',2,  'Color','k');
 plot(time, -threeSigmaAbove, 'LineWidth',2, 'Color','k');
-plot(time, deltaX, 'Color', 'b');
+plot(time, delta, 'Color', 'b');
+ylabel(yl);
+xlabel("Time (s)");
 hold off
+end
