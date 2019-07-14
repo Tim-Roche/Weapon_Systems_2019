@@ -13,25 +13,23 @@ inits = [P_0; V_0];
 %Number of Monte Carlos
 carlos = 500;
 
+setAcc = 'DWNA'; %Truth acceleration is white noise
+[posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
+graphName = "1D Kalman Filter -- a = White Noise";
 figure(1);
 movegui('west');
-acc = NaN; %Truth acceleration is white noise
-[posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(acc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
-graphName = "1D Kalman Filter -- a = White Noise";
 plotToGraph(graphName, posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time, carlos);
 
+setAcc = '15'; %Truth acceleration is 15m/s^2
+[posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
+graphName_a = "1D Kalman Filter -- a = 15m/s^2";
 figure(2);
 movegui('east');
-acc = 15; %Truth acceleration is 15m/s^2
-[posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time] = Kf_MC(acc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
-graphName_a = "1D Kalman Filter -- a = 15m/s^2";
 plotToGraph(graphName_a, posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time, carlos);
 
 
-function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(acc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos)
+function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos)
     %Kalman Filter + 500 rounds of Monte Carlo
-    %posP_c = zeros(TOTAL_POINTS,carlos);
-    %posV_c = zeros(TOTAL_POINTS,carlos);
     deltaX_c = zeros(carlos,TOTAL_POINTS);
     deltaV_c = zeros(carlos,TOTAL_POINTS);
     
@@ -41,7 +39,7 @@ function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(
     posP = zeros(1,TOTAL_POINTS);
     velP = zeros(1,TOTAL_POINTS); 
     for c = 1:carlos
-        [x, p, truth, time] = kf(acc,SIM_TIME,dt,inits,TOTAL_POINTS);
+        [x, p, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS);
         for i = 1:TOTAL_POINTS
             p2x2 = p(:,pull2x2byIndex(i));
             posP(i) = p2x2(1,1);
@@ -49,17 +47,11 @@ function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(
             deltaX(i) = x(1,i) - truth(1, i);
             deltaV(i) = x(2,i) - truth(2, i);
         end
-        %posP_c(:, i) = posP;
-        %posV_c(:, i) = velP;
         deltaX_c(c, :) = deltaX;
         deltaV_c(c, :) = deltaV;
     end
     mPEx = mean(deltaX_c);
     mPEv = mean(deltaV_c);
-    %for i = 1:carlos
-    %    mPEx(i) = mean(deltaMeanX(1:i));
-    %    mPEv(i) = mean(deltaMeanV(1:i));
-    %end
     
     varX = var(deltaX_c);
     varV = var(deltaV_c);
@@ -69,7 +61,10 @@ function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(
 end
 
 %----------Functions-------------
-function [x, p, truth, time] = kf(acc,SIM_TIME,dt,inits,TOTAL_POINTS)
+function [x, p, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS)
+DWNA = 
+if(setAcc = "DWNA")
+    
 time = 0:dt:SIM_TIME;
 
 %Defining Key Matrixes
@@ -78,13 +73,12 @@ p = zeros(2,TOTAL_POINTS*2);
 
 %Matrixes
 A = [1, dt; 0, 1]; %Transistion Matrix
-C = [1,0;0,1];
 
 %"Conversion" Matrix
-H = [1,0];%;1,0];
+H = [1,0];
 
 %Measurement Errors
-R_true = 900;
+R_true = 800;
 R = 0.95*R_true; 
 
 %Noise
@@ -92,38 +86,52 @@ W_true = 12;
 W = 0.9*W_true;
 
 %Initial Values
-x(:,1) = inits; %x_prediction
+%x(:,1) = inits; %x_prediction
 p(:,pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; %Process Uncertanty
 
 truth = zeros(2, TOTAL_POINTS);
 truth(:, 1) = inits;
 
-for i = 2:TOTAL_POINTS
+previousTruth = inits;
+
+initalSensorZ = 0 + normrnd(0, sqrt(R_true));
+for i = 1:TOTAL_POINTS
     B = [(1/2)*dt^2; dt]; %Control Matrix for accel.
     
     %Find true posistion
     if(isnan(acc)) %Check to see if this is Part 1 or Part 1.1
         acc = normrnd(0, sqrt(W_true)); %Make Acc white noise instead
+        truth(:,i) = A*previousTruth + B*acc;
+        acc = NaN;
+    else
+        truth(:,i) = A*previousTruth + B*acc;
     end
-    truth(:,i) = A*truth(:,i-1) + B*acc;
+    previousTruth = truth(:,i);
+    
+    
     %Get New Measured Value
     noiseX = normrnd(0, sqrt(R_true));
     measuredX = truth(1,i) + noiseX;%C*Y_m + z; 
     z = measuredX;
 
+    if(i == 1)
+        x(:, 1) = [z; (z-initalSensorZ)/dt];  
+    else
+        
     %Process Noise
     Q = [(1/4)*dt^4, (1/2)*dt^3; (1/2)*dt^3, dt^2]*W;
    
     %New Predicted State
-    x_pC = A*x(:, i-1); %Assuming no acceleration or error
-    p_pC = A*p(:, pull2x2byIndex(i-1))*A.' + Q; %Assuming no error
+    x_pC = A*x(:, i-1); 
+    p_pC = A*p(:, pull2x2byIndex(i-1))*A.' + Q; 
     
     %Gain Computation
     KG = (p_pC*H.')/(H*p_pC*H.' + R);
     
     %Calculate Current State
     x(:, i) = x_pC + KG*(z - H*x_pC);
-    p(:, pull2x2byIndex(i)) = (eye(2) - KG*H)*p_pC; %(eye(2) - KG*H)*p_pC*(eye(2)-KG*H).'+KG*R*KG.';
+    p(:, pull2x2byIndex(i)) = (eye(2) - KG*H)*p_pC; %(eye(2) - KG*H)*p_pC*(eye(2)-KG*H).'+KG*R*KG.'; 
+    end
 end
 end
 
