@@ -7,20 +7,13 @@ TOTAL_POINTS = int64(SIM_TIME/dt) + 1;
 
 %Initial Condition
 P_0 =[0; 0; 400000]; %Initial Posistion
-V_0 = 200; %Initial Velocity
+V_0 = [0; 400; 0]; %Initial Velocity
 inits = [P_0; V_0];
 
 %Number of Monte Carlos
 carlos = 500;
 
-setAcc = 'DWNA'; %Truth acceleration is white noise
-[posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
-graphName = "1D ORSE Filter -- a = White Noise";
-figure(1);
-movegui('west');
-plotToGraph(graphName, posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time, carlos);
-
-setAcc = '15'; %Truth acceleration is 15m/s^2
+setAcc = '9.8'; %Truth acceleration is 15m/s^2
 [posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
 graphName_a = "1D ORSE Filter -- a = 15m/s^2";
 figure(2);
@@ -61,12 +54,8 @@ end
 
 %----------Functions-------------
 function [x, M, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS)
-providedAcc = 0; 
-DWNA = true;
-if(setAcc ~= "DWNA") %If setAcc is DWNA then we want white noise
-    DWNA = false;
-    providedAcc = str2num(setAcc);
-end
+providedAcc = str2num(setAcc);
+
 
 time = 0:dt:SIM_TIME;
 
@@ -83,10 +72,6 @@ H = [1,0];
 %ORSE things
 lamda = 9;
 G = [(1/2)*dt^2; dt];
-r = (4+lamda-sqrt(8*lamda+lamda^2))/4;
-alpha = 1 - r^2;
-%beta = 2*(2-alpha) - 4*sqrt(1-alpha);
-beta = 2*(1-sqrt(1-alpha))^2;
 
 %Measurement Errors
 R_true = 900;
