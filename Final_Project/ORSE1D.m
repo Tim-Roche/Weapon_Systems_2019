@@ -61,7 +61,7 @@ end
 
 %----------Functions-------------
 function [x, M, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS)
-providedAcc = 0;
+providedAcc = 0; 
 DWNA = true;
 if(setAcc ~= "DWNA") %If setAcc is DWNA then we want white noise
     DWNA = false;
@@ -96,19 +96,9 @@ R = 0.95*R_true;
 W_true = 12;
 W = 0.9*W_true;
 
-%Initials
-p(:,pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; %Process Uncertanty
-
-
 M = zeros(2, TOTAL_POINTS*2);
-%M(:, pull2x2byIndex(1)) = 
-%M(:, pull2x2byIndex(1)) = [2*alpha^2 + beta*(2-3*alpha), beta*(2*alpha - beta)*(1/dt); beta*(2*alpha - beta) * (1/dt), (2*beta^2)/dt^2];
-%M(:, pull2x2byIndex(1)) = M(:, pull2x2byIndex(1))*R/(alpha*(4-2*alpha-beta));
-%M(:, pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; 
-M(:, pull2x2byIndex(1)) = [R, 0; 0, R];
-P(:, pull2x2byIndex(1)) = [alpha, beta/dt; beta/dt, (alpha*beta)/((1-alpha)*dt^2)]*W;
+M(:, pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; %Process Uncertanty%[R, 0; 0, R];
 
-%D = [((1-alpha)/beta)*dt^2; ((2*alpha-beta)/(2*beta))*dt];
 D = [0;0];
 
 truth = zeros(2, TOTAL_POINTS);
@@ -126,7 +116,6 @@ for i = 1:TOTAL_POINTS
     truth(:,i) = A*previousTruth + B*acc;
     previousTruth = truth(:,i); %Gets around indexing issue when i = 1
     
-    
     %Get New Measured Value
     noiseX = normrnd(0, sqrt(R_true));
     measuredX = truth(1,i) + noiseX;%C*Y_m + z; 
@@ -137,8 +126,8 @@ for i = 1:TOTAL_POINTS
     else
         
     %New Predicted State
-    x_pC = A*x(:, i-1); 
-    M_mC = A*M(:, pull2x2byIndex(i-1))*A.'; 
+    x_pC = A*x(:, i-1);
+    M_mC = A*M(:, pull2x2byIndex(i-1))*A.';
     D = A*D + G;
     
     %Gain Computation
@@ -148,7 +137,7 @@ for i = 1:TOTAL_POINTS
     %Calculate Current State
     x(:, i) = x_pC + KG*(z - H*x_pC);
     M(:, pull2x2byIndex(i)) = (eye(2) - KG*H)*M_mC*(eye(2)-KG*H).'+KG*R*KG.';
-    D = (eye(1) - KG*H)*D;
+    D = (eye(2) - KG*H)*D;
     end
 end
 end
@@ -184,7 +173,7 @@ ylabel(yl);
 xlabel("Time (s)");
 hold off
 
-%legend([p4(1), p3, p1, p5],'Orientation', 'Vertical');
+legend([p4(1), p3, p1, p5],'Orientation', 'Vertical');
 end
 
 function output = pull2x2byIndex(i)

@@ -6,7 +6,7 @@ dt = 2;
 TOTAL_POINTS = int64(SIM_TIME/dt) + 1;
 
 %Initial Condition
-P_0 = 0; %Initial Posistion
+P_0 =[0; 0; 400000]; %Initial Posistion
 V_0 = 200; %Initial Velocity
 inits = [P_0; V_0];
 
@@ -15,18 +15,17 @@ carlos = 500;
 
 setAcc = 'DWNA'; %Truth acceleration is white noise
 [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
-graphName = "1D Kalman Filter -- a = White Noise";
+graphName = "1D ORSE Filter -- a = White Noise";
 figure(1);
 movegui('west');
 plotToGraph(graphName, posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time, carlos);
 
 setAcc = '15'; %Truth acceleration is 15m/s^2
 [posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos);
-graphName_a = "1D Kalman Filter -- a = 15m/s^2";
+graphName_a = "1D ORSE Filter -- a = 15m/s^2";
 figure(2);
 movegui('east');
 plotToGraph(graphName_a, posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time, carlos);
-
 
 function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos)
     %Kalman Filter + 500 rounds of Monte Carlo
@@ -61,10 +60,14 @@ function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(
 end
 
 %----------Functions-------------
-function [x, p, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS)
-DWNA = 
-if(setAcc = "DWNA")
-    
+function [x, M, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS)
+providedAcc = 0; 
+DWNA = true;
+if(setAcc ~= "DWNA") %If setAcc is DWNA then we want white noise
+    DWNA = false;
+    providedAcc = str2num(setAcc);
+end
+
 time = 0:dt:SIM_TIME;
 
 %Defining Key Matrixes
@@ -77,37 +80,41 @@ A = [1, dt; 0, 1]; %Transistion Matrix
 %"Conversion" Matrix
 H = [1,0];
 
+%ORSE things
+lamda = 9;
+G = [(1/2)*dt^2; dt];
+r = (4+lamda-sqrt(8*lamda+lamda^2))/4;
+alpha = 1 - r^2;
+%beta = 2*(2-alpha) - 4*sqrt(1-alpha);
+beta = 2*(1-sqrt(1-alpha))^2;
+
 %Measurement Errors
-R_true = 800;
+R_true = 900;
 R = 0.95*R_true; 
 
 %Noise
 W_true = 12;
 W = 0.9*W_true;
 
-%Initial Values
-%x(:,1) = inits; %x_prediction
-p(:,pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; %Process Uncertanty
+M = zeros(2, TOTAL_POINTS*2);
+M(:, pull2x2byIndex(1)) = [1, (1/dt); (1/dt), (2/dt)^2]*R_true; %Process Uncertanty%[R, 0; 0, R];
+
+D = [0;0];
 
 truth = zeros(2, TOTAL_POINTS);
-truth(:, 1) = inits;
 
 previousTruth = inits;
-
-initalSensorZ = 0 + normrnd(0, sqrt(R_true));
+initalSensorZ = inits(1) + normrnd(0, sqrt(R_true));
 for i = 1:TOTAL_POINTS
     B = [(1/2)*dt^2; dt]; %Control Matrix for accel.
     
     %Find true posistion
-    if(isnan(acc)) %Check to see if this is Part 1 or Part 1.1
+    acc = providedAcc; 
+    if(DWNA) %Check to see if this is Part 1 or Part 1.1
         acc = normrnd(0, sqrt(W_true)); %Make Acc white noise instead
-        truth(:,i) = A*previousTruth + B*acc;
-        acc = NaN;
-    else
-        truth(:,i) = A*previousTruth + B*acc;
     end
-    previousTruth = truth(:,i);
-    
+    truth(:,i) = A*previousTruth + B*acc;
+    previousTruth = truth(:,i); %Gets around indexing issue when i = 1
     
     %Get New Measured Value
     noiseX = normrnd(0, sqrt(R_true));
@@ -118,19 +125,19 @@ for i = 1:TOTAL_POINTS
         x(:, 1) = [z; (z-initalSensorZ)/dt];  
     else
         
-    %Process Noise
-    Q = [(1/4)*dt^4, (1/2)*dt^3; (1/2)*dt^3, dt^2]*W;
-   
     %New Predicted State
-    x_pC = A*x(:, i-1); 
-    p_pC = A*p(:, pull2x2byIndex(i-1))*A.' + Q; 
+    x_pC = A*x(:, i-1);
+    M_mC = A*M(:, pull2x2byIndex(i-1))*A.';
+    D = A*D + G;
     
     %Gain Computation
-    KG = (p_pC*H.')/(H*p_pC*H.' + R);
+    S = M_mC + D*lamda^2*D.';
+    KG = (S*H.')/(H*S*H.' + R);
     
     %Calculate Current State
     x(:, i) = x_pC + KG*(z - H*x_pC);
-    p(:, pull2x2byIndex(i)) = (eye(2) - KG*H)*p_pC; %(eye(2) - KG*H)*p_pC*(eye(2)-KG*H).'+KG*R*KG.'; 
+    M(:, pull2x2byIndex(i)) = (eye(2) - KG*H)*M_mC*(eye(2)-KG*H).'+KG*R*KG.';
+    D = (eye(2) - KG*H)*D;
     end
 end
 end
