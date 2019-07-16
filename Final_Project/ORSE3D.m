@@ -1,3 +1,10 @@
+%Questions:
+%Is S a 6x6 and H a 2x3? because if true than how KG? cannot do that math
+%What Should we set M to be as default?
+%Is it fair to assume that M=P as Y = 0? (Error due to target model error)
+%If not how do I get that?
+%How is this weighted so I know how badly I am going to fail this class?
+
 %Timothy Roche
 %Final Project Weapon Systems
 rng('default');
@@ -20,36 +27,45 @@ figure(1);
 movegui('east');
 plotToGraph(graphName_a, posP_acc, velP_acc, deltaX_c_acc, deltaV_c_acc, mPEx_acc, mPEv_acc, varX_acc, varV_acc, time, carlos);
 
-function [posP, velP, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos)
+function [posP, velP, deltaX_tran, deltaV_tran, mPEx, mPEv, varX, varV, time] = Kf_MC(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS,carlos)
     %Kalman Filter + 500 rounds of Monte Carlo
-    deltaX_c = zeros(carlos,TOTAL_POINTS);
-    deltaV_c = zeros(carlos,TOTAL_POINTS);
     
-    deltaX = zeros(1, TOTAL_POINTS);
-    deltaV = zeros(1, TOTAL_POINTS);   
+    deltaX_c = zeros(carlos,TOTAL_POINTS,3);
+    deltaV_c = zeros(carlos,TOTAL_POINTS,3);
     
-    posP = zeros(1,TOTAL_POINTS);
-    velP = zeros(1,TOTAL_POINTS); 
+    posP = zeros(3,TOTAL_POINTS);
+    velP = zeros(3,TOTAL_POINTS); 
+    
     for c = 1:carlos
-        [x, p, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS);
+        [x, M, truth, time] = kf(setAcc,SIM_TIME,dt,inits,TOTAL_POINTS);
         for i = 1:TOTAL_POINTS
-            p2x2 = p(:,pull6x6byIndex(i));
-            posP(i) = p2x2(1,1);
-            velP(i) = p2x2(2,2);
-            deltaX(i) = x(1,i) - truth(1, i);
-            deltaV(i) = x(2,i) - truth(2, i);
+            p6x6 = M(:, pull6x6byIndex(i));
+            for d = 1:3
+                deltaX_c(c, i, d)  = x(d, i) - truth(d, i);
+                posP(d, i) = p6x6(d,d);
+            end
+            for d = 4:6
+                deltaV_c(c, i, d-3) = x(d, i) - truth(d, i);
+                velP(d-3, i) = p6x6(d,d);
+            end
         end
-        deltaX_c(c, :) = deltaX;
-        deltaV_c(c, :) = deltaV;
     end
-    mPEx = mean(deltaX_c);
-    mPEv = mean(deltaV_c);
     
-    varX = var(deltaX_c);
-    varV = var(deltaV_c);
-    
-    deltaX_c = reshape(deltaX_c.', 1, []);
-    deltaV_c = reshape(deltaV_c.', 1, []);
+    deltaX_tran = zeros(3, TOTAL_POINTS*carlos);
+    deltaV_tran = zeros(3, TOTAL_POINTS*carlos);
+    for d = 1:3
+        deltaDemX = deltaX_c(:,:,d);
+        deltaDemV = deltaV_c(:,:,d);
+        
+        mPEx(d) = mean(deltaDemX);
+        mPEv(d) = mean(deltaDemV);
+        
+        varX(d) = var(deltaDemX);
+        varV(d) = var(DeltaDemV);
+        
+        deltaX_tran(d, :) = reshape(deltaDemX.', 1, []);
+        deltaV_tran(d, :) = reshape(deltaDemY.', 1, []);
+    end
 end
 
 %----------Functions-------------
@@ -66,8 +82,7 @@ x = zeros(6, TOTAL_POINTS);
 A = eye(6,6) + [0,0,0,dt,0,0;0,0,0,0,dt,0;0,0,0,0,0,dt;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0]; %Transistion Matrix
 
 %"Conversion" Matrix
-H = [1,0];
-
+H = [0,1,0;0,0,1];
 %ORSE things
 lamda = 9;
 G = [(1/2)*dt^2;(1/2)*dt^2;(1/2)*dt^2; dt;dt;dt];
@@ -104,8 +119,7 @@ for i = 1:TOTAL_POINTS
     %Find true posistion
     acc = providedAcc*accVector; 
     
-    ACC = [acc; acc];
-    truth(:,i) = A*previousTruth + B*ACC;
+    truth(:,i) = A*previousTruth + B*acc;
     previousTruth = truth(:,i); %Gets around indexing issue when i = 1
     
     %Get New Measured Value
@@ -133,20 +147,25 @@ for i = 1:TOTAL_POINTS
 end
 end
 
-function plotToGraph(name, posP, posV, deltaX_c, deltaV_c, mPEx, mPEv, varX, varV, time, carlos)
+function plotToGraph(name, posP, posV, deltaX_tran, deltaV_tran, mPEx, mPEv, varX, varV, time, carlos)
 etime = repmat(time, carlos); %"extended" time. time array dup. for carlos
 
-sgtitle(name);
-subX = 1;
+subX = 3;
 subY = 2;
-name = "Posistion Error";
-yLabel = "Difference (m)";
-plotFilter(name, yLabel, posP, time, etime, deltaX_c, mPEx,varX,subX,subY,1);
-name = "Velocity Error";
-yLabel = "Difference (m/s)";
-plotFilter(name, yLabel, posV,time,etime, deltaV_c, mPEv, varV, subX,subY,2);
-end
 
+dir = ["x-dir"; "y-dir"; "z-dir"];
+
+for d = 1:3
+sgtitle(name);
+name = dir(d) + " Posistion Error";
+yLabel = "Difference (m)";
+plotFilter(name,yLabel,posP(d, :),time,etime,deltaX_tran(d), mPEx(d),varX(d),subX,subY,d);
+
+name = dir(d) + " Velocity Error";
+yLabel = "Difference (m/s)";
+plotFilter(name,yLabel,posV(d, :),time,etime,deltaV_tran(d),mPEv(d),varV(d),subX,subY,d+3);
+end
+end 
 function plotFilter(name, yl, P, time, etime, delta, mPE, sigma, subX, subY, pos)
 subplot(subY, subX, pos);
 title(name);
@@ -169,5 +188,5 @@ end
 
 function output = pull6x6byIndex(i)
 loc = i*6 - 1;
-output = loc:loc+1;
+output = loc:loc+5;
 end
